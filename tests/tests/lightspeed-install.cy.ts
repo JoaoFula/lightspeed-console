@@ -23,6 +23,12 @@ const aiChatEntry = `${popover} .ols-plugin__chat-entry--ai`;
 const attachments = `${popover} .ols-plugin__chat-prompt-attachments`;
 const attachMenuButton = `${popover} .ols-plugin__attach-menu`;
 const attachMenu = `${popover} .ols-plugin__context-menu`;
+const attachedYAML = `${popover} .ols-plugin__context-label`;
+const attachedYAMLButton = `${popover} .pf-v5-c-label__content`;
+const attachment = '.ols-plugin__attachment-modal';
+const attachmentSubBlock = `${attachment} .ols-plugin__code-block--attachment`
+const attachmentDismiss = `${attachmentSubBlock} .pf-m-link`;
+const attachmentEdit = `${attachmentSubBlock} .pf-m-primary`;
 const fileInput = 'input[type="file"]';
 const promptInput = `${popover} textarea`;
 const userFeedback = `${popover} .ols-plugin__feedback`;
@@ -534,6 +540,23 @@ spec:
       .contains('Dismiss')
       .click();
     cy.get(promptInput).type('Test{enter}');
+  });
+
+  it('Test modifying attached YAML (OLS-1541)', () => {
+    pages.goToPodDetails('openshift-console', podNamePrefix);
+    cy.get(mainButton).click();
+    cy.get(popover).should('exist');
+
+    // Test attaching pod YAML
+    cy.get(attachMenuButton).click();
+    cy.get(attachMenu).find('li:first-of-type button').contains('Full YAML file').click();
+    cy.get(attachedYAML).click();
+    cy.get(modal).find('button').contains('Dismiss').click();
+    cy.get(attachedYAML).click();
+    cy.get(modal).find('button').contains('Edit').click();
+    cy.get(modal).find('button').contains('Cancel').click();
+    cy.get(modal).find('button').contains('Edit').click();
+    cy.get(modal).find('button').contains('Save').click();
   });
 
   it('Test attaching events (OLS-746)', () => {
