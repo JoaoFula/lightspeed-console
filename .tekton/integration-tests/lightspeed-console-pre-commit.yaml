@@ -198,6 +198,7 @@ spec:
                 memory: 8Gi
             image: cypress/browsers:24.11.0
             script: |
+              export CYPRESS_LLM_TOKEN=$(cat "${LLM_TOKEN_PATH}")
               echo "COMMIT_SHA: ${COMMIT_SHA}"
               echo "CYPRESS_BASE_URL: ${CYPRESS_BASE_URL}"
               echo "CYPRESS_CONSOLE_IMAGE: ${CYPRESS_CONSOLE_IMAGE}"

@@ -190,9 +190,9 @@ spec:
     logLevel: INFO`;
       cy.exec(`echo '${config}' | oc create -f - --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
-      // Create empty secret
+      // Create secret
       cy.exec(
-        `oc create secret generic openai-api-keys --from-literal=apitoken=empty -n openshift-lightspeed --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+        `oc create secret generic openai-api-keys --from-literal=apitoken=${Cypress.env('LLM_TOKEN')} -n openshift-lightspeed --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
 
       cy.visit('/');
