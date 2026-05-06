@@ -10,7 +10,7 @@ All stream processing logic lives in `src/components/Prompt.tsx` within the
 |---|---|
 | `src/components/Prompt.tsx` | Stream initiation, SSE reading, event parsing, Redux dispatch for all event types |
 | `src/redux-actions.ts` | Actions dispatched during streaming: `setConversationID`, `chatHistoryUpdateByID`, `chatHistoryUpdateTool` |
-| `src/config.ts` | `QUERY_ENDPOINT` = `getApiUrl('/v1/streaming_query')` |
+| `src/config.ts` | `QUERY_ENDPOINT` constant built from `getApiUrl()` |
 | `src/error.ts` | `getFetchErrorMessage()` for error extraction |
 
 ## Data Flow
@@ -147,13 +147,12 @@ onStreamCancel()
 
 ### Token throttling
 
-Token updates use lodash `throttle()` with `{ leading: false, trailing: true }`
-at 100ms interval. This means:
+Token updates use lodash `throttle()` with trailing-only behavior. This means:
 
 - The first token does NOT trigger an immediate dispatch.
-- After each 100ms window, the latest accumulated text is dispatched.
+- After each throttle window, the latest accumulated text is dispatched.
 - The final token is always dispatched (trailing: true).
-- `dispatchTokens.flush()` is called on `end` and `error` events to ensure
+- The throttled function is flushed on `end` and `error` events to ensure
   the final state is always committed.
 
 The throttle targets `chatHistoryUpdateByID`, which triggers a Redux state
@@ -209,8 +208,8 @@ The raw response body is read incrementally via `response.body.getReader()`.
 ### Auto-submit clicks the send button
 
 The auto-submit mechanism does not call `onSubmit` directly. Instead, it
-programmatically clicks the MessageBar's send button DOM element
-(`querySelector('.pf-chatbot__button--send')?.click()`). This is necessary
-because calling `onSubmit` alone would not clear the MessageBar component's
-internal state (the MessageBar is a controlled component from PatternFly
-that manages its own internal buffer alongside the external `value` prop).
+programmatically clicks the MessageBar's send button DOM element. This is
+necessary because calling `onSubmit` alone would not clear the MessageBar
+component's internal state (the MessageBar is a controlled component from
+PatternFly that manages its own internal buffer alongside the external
+`value` prop).

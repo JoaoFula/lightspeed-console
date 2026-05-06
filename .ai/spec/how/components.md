@@ -73,8 +73,8 @@ ErrorBoundary
 ### Popover lifecycle
 
 1. `useHideLightspeed()` -> if hidden, render nothing.
-2. `useFirstTimeUser()` -> if first-time and not hidden, auto-open after 500ms.
-3. Fetch `/v1/feedback/status` on mount -> if disabled, dispatch `userFeedbackDisable()`.
+2. `useFirstTimeUser()` -> if first-time and not hidden, auto-open after a short delay.
+3. Fetch feedback status on mount -> if disabled, dispatch `userFeedbackDisable()`.
 4. Render: `isOpen` ? `GeneralPage` + close button : tooltip + open button.
 5. Close handler: if first-time user, call `markAsExperienced()`.
 

@@ -61,7 +61,7 @@ and communicates with the OLS backend service via the console's plugin proxy.
 | `src/components/ConfirmationModal.tsx` | Generic confirmation dialog. |
 | `src/components/CloseButton.tsx` | Close icon button. |
 | `src/components/NullContextProvider.tsx` | No-op React context provider returning `null`. Used as the component for the `console.context-provider` extension. |
-| `src/components/OverviewDetail.tsx` | Dashboard detail item showing plugin version (1.0.12). |
+| `src/components/OverviewDetail.tsx` | Dashboard detail item showing plugin version. |
 
 ### `src/assets/` -- Static assets
 
@@ -76,7 +76,7 @@ and communicates with the OLS backend service via the console's plugin proxy.
 | Path | Purpose |
 |---|---|
 | `console-extensions.json` | Declares 5 console extensions: flag, context-provider, dashboard detail, redux-reducer, action/provider |
-| `package.json` | Project metadata, dependencies, scripts. Name: `lightspeed-console-plugin`, version: 1.0.12 |
+| `package.json` | Project metadata, dependencies, scripts. Name: `lightspeed-console-plugin` |
 | `webpack.config.ts` | Webpack 5 config using `ConsoleRemotePlugin` for Module Federation. Production: hashed bundle names, minimization, deterministic chunk IDs. Dev: source maps, HMR on port 9001. |
 | `tsconfig.json` | TypeScript config targeting ES2020, React JSX. Strict mode enabled. |
 | `.eslintrc.yml` | ESLint config: recommended + react + react-hooks + typescript + i18next + prettier |
@@ -105,7 +105,7 @@ and communicates with the OLS backend service via the console's plugin proxy.
 
 4. **Context provider mounts**: `NullContextProvider` renders `null`. `usePopover` hook fires, calling `useModal()` to launch `Popover` component as a console modal.
 
-5. **Popover initializes**: Fetches feedback status from `/v1/feedback/status`. Checks first-time user state. If first-time and not hidden, auto-opens after 500ms delay.
+5. **Popover initializes**: Fetches feedback status. Checks first-time user state. If first-time and not hidden, auto-opens after a short delay.
 
 6. **Auth check**: `GeneralPage` mounts and `useAuth` POSTs to `/authorized`. Auth status determines whether the prompt footer is shown.
 
@@ -206,7 +206,7 @@ All Redux state access uses `.get('key')` and `.getIn(['path', 'to', 'value'])` 
 
 ### TypeScript type suppression for PatternFly Chatbot
 
-Multiple PatternFly Chatbot components use `@ts-expect-error: TS2786` comments because the chatbot library's type definitions are not fully compatible with the project's TypeScript version. This is a known issue and does not indicate a runtime problem.
+Some PatternFly Chatbot components require TypeScript type suppression comments because the chatbot library's type definitions are not fully compatible with the project's TypeScript configuration.
 
 ### Module Federation entry points
 
