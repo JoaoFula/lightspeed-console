@@ -43,6 +43,8 @@ declare global {
         query: string,
         errorMessage: string,
       ): Chainable<Element>;
+      interceptQueryWithApproval(alias: string, query: string): Chainable<Element>;
+      interceptToolApproval(alias: string, approved: boolean): Chainable<Element>;
       interceptMCPQuery(
         alias: string,
         query: string,
@@ -56,8 +58,6 @@ declare global {
         serverName?: string,
         uiResourceUri?: string,
       ): Chainable<Element>;
-      interceptQueryWithApproval(alias: string, query: string): Chainable<Element>;
-      interceptToolApproval(alias: string, approved: boolean): Chainable<Element>;
     }
   }
 }
