@@ -34,7 +34,7 @@ import {
   TaskIcon,
   WrenchIcon,
 } from '@patternfly/react-icons';
-import { useLocation } from 'react-router-dom-v5-compat';
+import { useLocation } from 'react-router';
 
 import { AttachmentTypes, toOLSAttachment } from '../attachments';
 import { getApiUrl } from '../config';
@@ -208,112 +208,6 @@ const Prompt: React.FC<PromptProps> = ({ scrollIntoView }) => {
 
   const isResourceContext = !isEmpty(context) && !!kind && !!name;
 
-  const attachMenuItems = React.useMemo(
-    () => [
-      <DropdownList key="menu-list">
-        {isResourceContext && (
-          <>
-            <Title headingLevel="h5" key="currently-viewing-title">
-              {t('Currently viewing')}
-            </Title>
-            <div
-              key="currently-viewing-label"
-              style={{ marginBottom: 'var(--pf-t--global--spacer--md)' }}
-            >
-              <Label
-                className="ols-plugin__context-label"
-                textMaxWidth="10rem"
-                title={t('{{kind}} {{name}} in namespace {{namespace}}', {
-                  kind,
-                  name,
-                  namespace,
-                })}
-              >
-                <ResourceIcon kind={kind} /> {name}
-              </Label>
-            </div>
-          </>
-        )}
-        {(isResourceContext || showEvents || showLogs) && (
-          <Title headingLevel="h5" key="attach-title">
-            {t('Attach')}
-          </Title>
-        )}
-        {isResourceContext &&
-          (kind === 'cluster.open-cluster-management.io~v1~ManagedCluster' ? (
-            <DropdownItem
-              icon={<TaskIcon />}
-              id="yaml-cluster"
-              key="yaml-cluster"
-              value={AttachmentTypes.YAML}
-            >
-              {t('Attach cluster info')} {isLoading && <Spinner size="md" />}
-            </DropdownItem>
-          ) : (
-            <>
-              <DropdownItem
-                icon={<FileCodeIcon />}
-                id="yaml-full"
-                key="yaml-full"
-                value={AttachmentTypes.YAML}
-              >
-                {t('Full YAML file')} {isLoading && <Spinner size="md" />}
-              </DropdownItem>
-              <DropdownItem
-                icon={<FileCodeIcon />}
-                id="yaml-filtered"
-                key="yaml-filtered"
-                value={AttachmentTypes.YAMLFiltered}
-              >
-                {t('Filtered YAML')} <FilteredYAMLInfo />
-              </DropdownItem>
-            </>
-          ))}
-        {kind === 'Alert' && (
-          <DropdownItem
-            icon={<FileCodeIcon />}
-            id="alert-yaml"
-            key="alert-yaml"
-            value={AttachmentTypes.YAML}
-          >
-            {t('Alert')} {isLoading && <Spinner size="md" />}
-          </DropdownItem>
-        )}
-        {showEvents && (
-          <DropdownItem
-            icon={<TaskIcon />}
-            id="events"
-            isDisabled={!isEventsLoading && events.length === 0}
-            key="events"
-            value={AttachmentTypes.Events}
-          >
-            {t('Events')}
-          </DropdownItem>
-        )}
-        {showLogs && (
-          <DropdownItem icon={<TaskIcon />} id="logs" key="logs" value={AttachmentTypes.Log}>
-            {t('Logs')}
-          </DropdownItem>
-        )}
-        <DropdownItem icon={<FileUploadIcon />} key="upload" value={AttachmentTypes.YAMLUpload}>
-          {t('Upload from computer')}
-        </DropdownItem>
-      </DropdownList>,
-    ],
-    [
-      events.length,
-      isEventsLoading,
-      isLoading,
-      isResourceContext,
-      kind,
-      name,
-      namespace,
-      showEvents,
-      showLogs,
-      t,
-    ],
-  );
-
   const onAttachMenuSelect = React.useCallback(
     (_ev: React.MouseEvent, attachmentType: string | number) => {
       setIsOpen(false);
@@ -457,6 +351,129 @@ const Prompt: React.FC<PromptProps> = ({ scrollIntoView }) => {
       setIsOpen,
       setLoaded,
       setLoading,
+      t,
+    ],
+  );
+
+  const attachMenuItems = React.useMemo(
+    () => [
+      <DropdownList key="menu-list">
+        {isResourceContext && (
+          <>
+            <Title headingLevel="h5" key="currently-viewing-title">
+              {t('Currently viewing')}
+            </Title>
+            <div
+              key="currently-viewing-label"
+              style={{ marginBottom: 'var(--pf-t--global--spacer--md)' }}
+            >
+              <Label
+                className="ols-plugin__context-label"
+                textMaxWidth="10rem"
+                title={t('{{kind}} {{name}} in namespace {{namespace}}', {
+                  kind,
+                  name,
+                  namespace,
+                })}
+              >
+                <ResourceIcon kind={kind} /> {name}
+              </Label>
+            </div>
+          </>
+        )}
+        {(isResourceContext || showEvents || showLogs) && (
+          <Title headingLevel="h5" key="attach-title">
+            {t('Attach')}
+          </Title>
+        )}
+        {isResourceContext &&
+          (kind === 'cluster.open-cluster-management.io~v1~ManagedCluster' ? (
+            <DropdownItem
+              icon={<TaskIcon />}
+              id="yaml-cluster"
+              key="yaml-cluster"
+              onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.YAML)}
+              value={AttachmentTypes.YAML}
+            >
+              {t('Attach cluster info')} {isLoading && <Spinner size="md" />}
+            </DropdownItem>
+          ) : (
+            <>
+              <DropdownItem
+                icon={<FileCodeIcon />}
+                id="yaml-full"
+                key="yaml-full"
+                onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.YAML)}
+                value={AttachmentTypes.YAML}
+              >
+                {t('Full YAML file')} {isLoading && <Spinner size="md" />}
+              </DropdownItem>
+              <DropdownItem
+                icon={<FileCodeIcon />}
+                id="yaml-filtered"
+                key="yaml-filtered"
+                onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.YAMLFiltered)}
+                value={AttachmentTypes.YAMLFiltered}
+              >
+                {t('Filtered YAML')} <FilteredYAMLInfo />
+              </DropdownItem>
+            </>
+          ))}
+        {kind === 'Alert' && (
+          <DropdownItem
+            icon={<FileCodeIcon />}
+            id="alert-yaml"
+            key="alert-yaml"
+            onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.YAML)}
+            value={AttachmentTypes.YAML}
+          >
+            {t('Alert')} {isLoading && <Spinner size="md" />}
+          </DropdownItem>
+        )}
+        {showEvents && (
+          <DropdownItem
+            icon={<TaskIcon />}
+            id="events"
+            isDisabled={!isEventsLoading && events.length === 0}
+            key="events"
+            onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.Events)}
+            value={AttachmentTypes.Events}
+          >
+            {t('Events')}
+          </DropdownItem>
+        )}
+        {showLogs && (
+          <DropdownItem
+            icon={<TaskIcon />}
+            id="logs"
+            key="logs"
+            onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.Log)}
+            value={AttachmentTypes.Log}
+          >
+            {t('Logs')}
+          </DropdownItem>
+        )}
+        <DropdownItem
+          icon={<FileUploadIcon />}
+          key="upload"
+          onClick={() => onAttachMenuSelect(undefined, AttachmentTypes.YAMLUpload)}
+          value={AttachmentTypes.YAMLUpload}
+        >
+          {t('Upload from computer')}
+        </DropdownItem>
+      </DropdownList>,
+    ],
+    [
+      events.length,
+      isEventsLoading,
+      isLoading,
+      isResourceContext,
+      kind,
+      name,
+      namespace,
+      onAttachMenuSelect,
+      showEvents,
+      showLogs,
       t,
     ],
   );
@@ -764,7 +781,6 @@ const Prompt: React.FC<PromptProps> = ({ scrollIntoView }) => {
 
   return (
     <div>
-      {/* @ts-expect-error: TS2786 */}
       <MessageBar
         additionalActions={
           <Select
@@ -799,7 +815,6 @@ const Prompt: React.FC<PromptProps> = ({ scrollIntoView }) => {
         attachMenuProps={{
           attachMenuItems,
           isAttachMenuOpen: isOpen,
-          onAttachMenuSelect,
           onAttachMenuToggleClick: () => setIsOpen(!isOpen),
           setIsAttachMenuOpen: setIsOpen,
         }}
